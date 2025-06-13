@@ -1,0 +1,925 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>La Catedral de Lima: Historia viva en el corazón de la ciudad</title>
+    
+    <!-- Google Fonts: Playfair Display for titles, Lato for text -->
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Lato:wght@300;400;700&family=Playfair+Display:wght@700&display=swap" rel="stylesheet">
+
+    <!-- Simple library for scroll animations -->
+    <script src="https://unpkg.com/scrollreveal"></script>
+
+    <style>
+        /* --- CSS VARIABLES AND GLOBAL STYLES --- */
+        :root {
+            --color-gold: #C9A86B;
+            --color-stone: #F0EBE5;
+            --color-dark: #212121;
+            --color-white: #FFFFFF;
+            --font-title: 'Playfair Display', serif;
+            --font-text: 'Lato', sans-serif;
+        }
+
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+
+        html {
+            scroll-behavior: smooth;
+        }
+
+        body {
+            font-family: var(--font-text);
+            background-color: var(--color-stone);
+            color: var(--color-dark);
+            -webkit-font-smoothing: antialiased;
+            -moz-osx-font-smoothing: grayscale;
+        }
+
+        h1, h2 {
+            font-family: var(--font-title);
+            color: var(--color-gold);
+            font-weight: 700;
+        }
+        
+        section {
+            padding: 100px 10%;
+            overflow-x: hidden;
+        }
+
+        .section-title {
+            text-align: center;
+            font-size: clamp(2.5rem, 5vw, 3rem);
+            margin-bottom: 60px;
+            position: relative;
+        }
+
+        .section-title::after {
+            content: '';
+            display: block;
+            width: 60px;
+            height: 3px;
+            background-color: var(--color-gold);
+            margin: 15px auto 0;
+        }
+
+        /* --- 1. HERO SECTION --- */
+        #inicio {
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            text-align: center;
+            height: 100vh;
+            padding: 0;
+            color: var(--color-white);
+            /* IMPORTANT: Replace this background image with a high-quality one of the Cathedral's facade */
+            background-image: linear-gradient(rgba(0, 0, 0, 0.55), rgba(0, 0, 0, 0.55)), url('https://images.unsplash.com/photo-1628592102751-ba8144146a31?q=80&w=1935&auto=format&fit=crop');
+            background-size: cover;
+            background-position: center;
+            background-attachment: fixed; /* Parallax effect */
+        }
+
+        #inicio h1 {
+            font-size: clamp(3rem, 8vw, 5rem);
+            color: var(--color-white);
+            text-shadow: 3px 3px 15px rgba(0,0,0,0.7);
+            max-width: 900px;
+            line-height: 1.2;
+        }
+
+        .explore-button {
+            position: absolute;
+            bottom: 50px;
+            left: 50%;
+            transform: translateX(-50%);
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            color: var(--color-white);
+            text-decoration: none;
+            font-size: 0.9rem;
+            letter-spacing: 1px;
+            text-transform: uppercase;
+            transition: transform 0.3s ease;
+        }
+        .explore-button:hover {
+            transform: translateY(-5px);
+        }
+        .explore-button span {
+            margin-bottom: 10px;
+        }
+        .explore-button .arrow {
+            width: 2px;
+            height: 30px;
+            background-color: var(--color-white);
+            position: relative;
+        }
+        .explore-button .arrow::after {
+            content: '';
+            position: absolute;
+            bottom: 0;
+            left: -4px;
+            width: 10px;
+            height: 10px;
+            border-bottom: 2px solid white;
+            border-right: 2px solid white;
+            transform: rotate(45deg);
+        }
+
+        /* --- 2. INTERACTIVE VISUAL GALLERY --- */
+        .gallery-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(300px, 1fr));
+            gap: 20px;
+        }
+
+        .gallery-item {
+            position: relative;
+            cursor: pointer;
+            overflow: hidden;
+            border-radius: 12px;
+            box-shadow: 0 15px 30px rgba(0,0,0,0.1);
+            height: 350px;
+        }
+
+        .gallery-item img {
+            width: 100%;
+            height: 100%;
+            object-fit: cover;
+            display: block;
+            transition: transform 0.5s cubic-bezier(0.25, 0.46, 0.45, 0.94);
+        }
+
+        .gallery-item:hover img {
+            transform: scale(1.1);
+        }
+
+        .gallery-item .overlay {
+            position: absolute;
+            bottom: 0;
+            left: 0;
+            right: 0;
+            background: linear-gradient(to top, rgba(0,0,0,0.85) 0%, transparent 100%);
+            color: var(--color-white);
+            padding: 50px 20px 20px;
+            opacity: 1;
+            transition: opacity 0.3s ease;
+            display: flex;
+            align-items: flex-end;
+        }
+        
+        .gallery-item .overlay-text {
+            transform: translateY(10px);
+            opacity: 0;
+            transition: transform 0.4s ease, opacity 0.4s ease;
+            font-weight: bold;
+            font-size: 1.2rem;
+        }
+
+        .gallery-item:hover .overlay-text {
+            transform: translateY(0);
+            opacity: 1;
+        }
+        
+        /* --- MODALS (for Gallery and Gemini) --- */
+        .modal {
+            display: none;
+            position: fixed;
+            z-index: 1001;
+            left: 0;
+            top: 0;
+            width: 100%;
+            height: 100%;
+            overflow: auto;
+            background-color: rgba(33, 33, 33, 0.95);
+            justify-content: center;
+            align-items: center;
+            animation: fadeIn 0.5s;
+            padding: 20px;
+        }
+
+        @keyframes fadeIn { from {opacity: 0;} to {opacity: 1;} }
+        @keyframes fadeOut { from {opacity: 1;} to {opacity: 0;} }
+
+        .modal-content {
+            margin: auto;
+            display: block;
+            width: auto;
+            max-width: 90%;
+            max-height: 80vh;
+            border-radius: 8px;
+        }
+        
+        .modal-caption {
+            margin: 15px auto;
+            display: block;
+            width: 80%;
+            max-width: 700px;
+            text-align: center;
+            color: #ccc;
+            font-size: 1.1rem;
+            padding: 10px 0;
+        }
+        
+        .gemini-modal-content {
+            background-color: var(--color-stone);
+            padding: 40px;
+            border-radius: 12px;
+            max-width: 600px;
+            width: 90%;
+            box-shadow: 0 10px 30px rgba(0,0,0,0.2);
+            position: relative;
+        }
+        .gemini-modal-content h3 {
+            margin-bottom: 20px;
+            font-size: 2rem;
+        }
+        .gemini-modal-content p {
+            font-size: 1rem;
+            line-height: 1.7;
+            color: var(--color-dark);
+            min-height: 100px;
+        }
+
+        .close {
+            position: absolute;
+            top: 15px;
+            right: 25px;
+            color: #aaa;
+            font-size: 40px;
+            font-weight: bold;
+            transition: 0.3s;
+            cursor: pointer;
+            line-height: 1;
+        }
+        .close:hover, .close:focus { color: var(--color-dark); }
+        
+        /* Loading Spinner */
+        .loader {
+            border: 5px solid #f3f3f3;
+            border-radius: 50%;
+            border-top: 5px solid var(--color-gold);
+            width: 50px;
+            height: 50px;
+            animation: spin 1s linear infinite;
+            margin: 20px auto;
+        }
+        @keyframes spin { 0% { transform: rotate(0deg); } 100% { transform: rotate(360deg); } }
+
+
+        /* --- 3. VISUAL TIMELINE --- */
+        #historia {
+            background-color: var(--color-dark);
+            color: var(--color-stone);
+        }
+
+        .timeline {
+            position: relative;
+            max-width: 1200px;
+            margin: 0 auto;
+        }
+
+        .timeline::after {
+            content: '';
+            position: absolute;
+            width: 4px;
+            background-color: var(--color-gold);
+            top: 0;
+            bottom: 0;
+            left: 50%;
+            margin-left: -2px;
+        }
+
+        .timeline-container {
+            padding: 10px 40px;
+            position: relative;
+            background-color: inherit;
+            width: 50%;
+        }
+        
+        .timeline-container.left { left: 0; }
+        .timeline-container.right { left: 50%; }
+
+        .timeline-container::after {
+            content: '';
+            position: absolute;
+            width: 20px;
+            height: 20px;
+            right: -12px;
+            background-color: var(--color-stone);
+            border: 4px solid var(--color-gold);
+            top: 35px;
+            border-radius: 50%;
+            z-index: 1;
+        }
+
+        .right::after { left: -8px; }
+
+        .timeline-content {
+            padding: 25px;
+            background-color: #2c2c2c;
+            position: relative;
+            border-radius: 8px;
+            box-shadow: 0 5px 15px rgba(0,0,0,0.2);
+        }
+        
+        .timeline-content img {
+            width: 100%;
+            height: 180px;
+            object-fit: cover;
+            border-radius: 6px;
+            margin-bottom: 15px;
+        }
+        
+        .timeline-content h3 { font-size: 1.8rem; margin-bottom: 10px; }
+        .timeline-content p { font-size: 0.95rem; line-height: 1.6; font-weight: 300; }
+
+        /* --- 4. ARCHITECTURAL DETAILS (with zoom) --- */
+        .details-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(320px, 1fr));
+            gap: 30px;
+        }
+
+        .detail-item {
+            text-align: center;
+        }
+        
+        .detail-image-container {
+            overflow: hidden;
+            border-radius: 12px;
+            margin-bottom: 20px;
+            box-shadow: 0 15px 30px rgba(0,0,0,0.1);
+        }
+
+        .detail-item img {
+            width: 100%;
+            height: 400px;
+            object-fit: cover;
+            display: block;
+            transition: transform 0.5s cubic-bezier(0.25, 0.46, 0.45, 0.94);
+        }
+        
+        .detail-item:hover img {
+            transform: scale(1.15);
+        }
+        
+        .detail-item h3 {
+            font-size: 1.6rem;
+            color: var(--color-dark);
+            margin-bottom: 5px;
+            font-family: var(--font-title);
+        }
+        
+        .detail-item p {
+            font-size: 1rem;
+            color: #555;
+            text-transform: uppercase;
+            letter-spacing: 1px;
+            margin-bottom: 15px;
+        }
+
+        .gemini-button {
+            background: linear-gradient(45deg, var(--color-gold), #e0c28e);
+            color: var(--color-dark);
+            border: none;
+            padding: 10px 20px;
+            font-family: var(--font-text);
+            font-weight: bold;
+            border-radius: 8px;
+            cursor: pointer;
+            transition: transform 0.3s, box-shadow 0.3s;
+            box-shadow: 0 4px 15px rgba(0,0,0,0.1);
+        }
+        .gemini-button:hover {
+            transform: translateY(-3px);
+            box-shadow: 0 7px 20px rgba(0,0,0,0.15);
+        }
+        
+        /* --- 4.5. GEMINI LEGENDS SECTION --- */
+        #leyendas {
+            background-color: var(--color-dark);
+            text-align: center;
+        }
+        #leyendas h2, #leyendas p {
+            color: var(--color-stone);
+        }
+        #leyendas .section-description {
+            max-width: 700px;
+            margin: -40px auto 40px auto;
+            font-size: 1.1rem;
+            line-height: 1.6;
+            font-weight: 300;
+        }
+
+        #leyenda-resultado {
+            margin-top: 40px;
+            padding: 30px;
+            background-color: #2c2c2c;
+            border-radius: 8px;
+            min-height: 150px;
+            text-align: left;
+            line-height: 1.8;
+            font-size: 1.05rem;
+            color: var(--color-stone);
+            display: none; /* Hidden by default */
+        }
+        .leyenda-placeholder {
+            opacity: 0.5;
+        }
+
+        /* --- 4.6. VIRTUAL GUIDE (QR CODE) SECTION --- */
+        #guia-virtual {
+            text-align: center;
+            background-color: var(--color-white);
+        }
+        #guia-virtual .section-description {
+            max-width: 700px;
+            margin: -40px auto 40px auto;
+            font-size: 1.1rem;
+            line-height: 1.6;
+            color: #555;
+        }
+        .qr-code-container {
+            margin-top: 40px;
+        }
+        .qr-code-container img {
+            width: 250px;
+            height: 250px;
+            border: 8px solid var(--color-white);
+            border-radius: 12px;
+            box-shadow: 0 10px 30px rgba(0,0,0,0.1);
+        }
+        .qr-code-container p {
+            margin-top: 20px;
+            font-size: 1.2rem;
+            font-weight: bold;
+            color: var(--color-gold);
+            text-transform: uppercase;
+            letter-spacing: 2px;
+        }
+
+        /* --- 5. MAP AND LOCATION --- */
+        .map-container {
+            display: flex;
+            flex-wrap: wrap;
+            gap: 40px;
+            align-items: center;
+        }
+
+        .map-text {
+            flex: 1 1 400px;
+        }
+        
+        .map-text h2 {
+            font-size: clamp(2.2rem, 5vw, 2.8rem);
+            text-align: left;
+        }
+        .map-text h2::after {
+            margin: 15px 0 0;
+        }
+
+        .map-text img {
+            width: 100%;
+            border-radius: 12px;
+            margin: 25px 0;
+            box-shadow: 0 10px 25px rgba(0,0,0,0.1);
+        }
+        
+        .map-embed {
+            flex: 1 1 500px;
+            height: 480px;
+            border-radius: 12px;
+            overflow: hidden;
+            box-shadow: 0 10px 25px rgba(0,0,0,0.1);
+        }
+        
+        .map-embed iframe {
+            width: 100%;
+            height: 100%;
+            border: 0;
+        }
+        
+        .cta-button {
+            display: inline-block;
+            background-color: var(--color-gold);
+            color: var(--color-white);
+            padding: 15px 35px;
+            text-decoration: none;
+            font-weight: bold;
+            border-radius: 8px;
+            transition: background-color 0.3s, transform 0.3s;
+            text-align: center;
+            font-size: 1rem;
+            letter-spacing: 1px;
+        }
+
+        .cta-button:hover {
+            background-color: #b38e4b;
+            transform: translateY(-3px);
+        }
+        
+        /* --- 6. FOOTER --- */
+        footer {
+            background-color: var(--color-dark);
+            color: var(--color-stone);
+            text-align: center;
+            padding: 50px 10%;
+        }
+        
+        .footer-logo {
+            width: 120px;
+            height: auto;
+            margin-bottom: 25px;
+            filter: brightness(0) invert(1);
+            opacity: 0.8;
+        }
+        
+        .social-links {
+            margin-bottom: 25px;
+        }
+        .social-links a {
+            color: var(--color-stone);
+            text-decoration: none;
+            margin: 0 15px;
+            font-size: 1rem;
+            transition: color 0.3s;
+            text-transform: uppercase;
+            letter-spacing: 2px;
+            position: relative;
+        }
+        .social-links a::after {
+            content: '';
+            position: absolute;
+            width: 100%;
+            height: 1px;
+            background: var(--color-gold);
+            bottom: -5px;
+            left: 0;
+            transform: scaleX(0);
+            transform-origin: center;
+            transition: transform 0.4s ease;
+        }
+        .social-links a:hover { color: var(--color-gold); }
+        .social-links a:hover::after { transform: scaleX(1); }
+        
+        .footer-credits {
+            margin-top: 25px;
+            font-size: 0.85rem;
+            opacity: 0.6;
+            line-height: 1.6;
+        }
+        
+        /* --- RESPONSIVE DESIGN ADJUSTMENTS --- */
+        @media (max-width: 768px) {
+            section { padding: 80px 5%; }
+            .timeline::after { left: 31px; }
+            .timeline-container { width: 100%; padding-left: 70px; padding-right: 25px; }
+            .timeline-container.left, .timeline-container.right { left: 0%; }
+            .timeline-container.left::after, .timeline-container.right::after { left: 21px; }
+        }
+    </style>
+</head>
+<body>
+
+    <!-- ======================= -->
+    <!--  1. HERO SECTION        -->
+    <!-- ======================= -->
+    <section id="inicio">
+        <div class="hero-content">
+            <h1>La Catedral de Lima: <br>Historia viva en el corazón de la ciudad</h1>
+            <a href="#galeria" class="explore-button">
+                <span>Explorar</span>
+                <div class="arrow"></div>
+            </a>
+        </div>
+    </section>
+
+    <!-- ============================= -->
+    <!--  2. INTERACTIVE VISUAL GALLERY -->
+    <!-- ============================= -->
+    <section id="galeria">
+        <h2 class="section-title">Galería Visual</h2>
+        <div class="gallery-grid">
+             <!-- Image 1 -->
+            <div class="gallery-item" data-img-src="https://images.pexels.com/photos/10355415/pexels-photo-10355415.jpeg?auto=compress&cs=tinysrgb&w=1260&h=750&dpr=1" data-caption="Imponente fachada de estilo renacentista y neoclásico.">
+                <img src="https://images.pexels.com/photos/10355415/pexels-photo-10355415.jpeg?auto=compress&cs=tinysrgb&w=1260&h=750&dpr=1" alt="Fachada de la Catedral">
+                <div class="overlay"><span class="overlay-text">Fachada Principal</span></div>
+            </div>
+            <!-- Image 2 -->
+            <div class="gallery-item" data-img-src="https://live.staticflickr.com/65535/51296726883_2299b80b06_b.jpg" data-caption="La majestuosa nave central con sus bóvedas góticas tardías.">
+                <img src="https://live.staticflickr.com/65535/51296726883_2299b80b06_b.jpg" alt="Nave Central">
+                <div class="overlay"><span class="overlay-text">Nave Central</span></div>
+            </div>
+            <!-- Image 3 -->
+            <div class="gallery-item" data-img-src="https://live.staticflickr.com/2823/33719813581_d04a60aa10_b.jpg" data-caption="Detalle de los retablos barrocos, tallados y bañados en pan de oro.">
+                <img src="https://live.staticflickr.com/2823/33719813581_d04a60aa10_b.jpg" alt="Retablos y Bóvedas">
+                <div class="overlay"><span class="overlay-text">Retablos y Bóvedas</span></div>
+            </div>
+            <!-- Image 4 -->
+            <div class="gallery-item" data-img-src="https://live.staticflickr.com/65535/49673891461_f9a93ce9ea_b.jpg" data-caption="La cripta donde descansan los restos del conquistador Francisco Pizarro.">
+                <img src="https://live.staticflickr.com/65535/49673891461_f9a93ce9ea_b.jpg" alt="Cripta de Pizarro">
+                <div class="overlay"><span class="overlay-text">Cripta de Pizarro</span></div>
+            </div>
+            <!-- Image 5 -->
+            <div class="gallery-item" data-img-src="https://live.staticflickr.com/65535/50864703758_6824a7b738_b.jpg" data-caption="La Catedral iluminada, un faro de historia en la noche limeña.">
+                <img src="https://live.staticflickr.com/65535/50864703758_6824a7b738_b.jpg" alt="Vista Nocturna">
+                <div class="overlay"><span class="overlay-text">Vista Nocturna</span></div>
+            </div>
+        </div>
+    </section>
+
+    <!-- Modal for the Gallery -->
+    <div id="imageModal" class="modal">
+        <span class="close close-image-modal">&times;</span>
+        <img class="modal-content" id="modalImage">
+        <div id="modalCaption" class="modal-caption"></div>
+    </div>
+
+    <!-- Modal for Gemini API Results -->
+    <div id="geminiModal" class="modal">
+        <div class="gemini-modal-content">
+            <span class="close close-gemini-modal">&times;</span>
+            <h3 id="geminiModalTitle"></h3>
+            <div id="geminiModalResult"><div class="loader"></div></div>
+        </div>
+    </div>
+
+    <!-- =================================== -->
+    <!--  3. VISUAL TIMELINE                 -->
+    <!-- =================================== -->
+    <section id="historia">
+        <h2 class="section-title">Historia en Imágenes</h2>
+        <div class="timeline">
+            <!-- Milestone 1 -->
+            <div class="timeline-container left">
+                <div class="timeline-content">
+                    <img src="https://upload.wikimedia.org/wikipedia/commons/thumb/1/1c/Fundaci%C3%B3n_de_Lima.jpg/800px-Fundaci%C3%B3n_de_Lima.jpg" alt="Fundación de Lima">
+                    <h3>1535</h3>
+                    <p>Francisco Pizarro coloca la primera piedra, iniciando la construcción de la primera iglesia mayor en la recién fundada Ciudad de los Reyes.</p>
+                </div>
+            </div>
+            <!-- Milestone 2 -->
+            <div class="timeline-container right">
+                <div class="timeline-content">
+                    <img src="https://upload.wikimedia.org/wikipedia/commons/4/4b/Terremoto_de_Lima_1746.jpg" alt="Terremoto de 1746">
+                    <h3>1746</h3>
+                    <p>Un devastador terremoto destruye gran parte de la catedral. Su reconstrucción, liderada por el jesuita Juan Rehr, definirá su apariencia actual.</p>
+                </div>
+            </div>
+            <!-- Milestone 3 -->
+            <div class="timeline-container left">
+                <div class="timeline-content">
+                     <img src="https://upload.wikimedia.org/wikipedia/commons/thumb/2/23/Towers_of_the_Cathedral_of_Lima%2C_Peru.jpg/800px-Towers_of_the_Cathedral_of_Lima%2C_Peru.jpg" alt="Torres neoclásicas">
+                    <h3>1797</h3>
+                    <p>Se concluyen las torres neoclásicas, diseñadas por Ignacio Martorell, que coronan la fachada con su característico estilo hasta el día de hoy.</p>
+                </div>
+            </div>
+             <!-- Milestone 4 -->
+            <div class="timeline-container right">
+                <div class="timeline-content">
+                     <img src="https://www.biografiasyvidas.com/biografia/p/fotos/pizarro_francisco_2.jpg" alt="Restos de Pizarro">
+                    <h3>1977</h3>
+                    <p>Científicos confirman la autenticidad de los restos de Francisco Pizarro, hallados en una cripta, consolidando un capítulo clave de su historia.</p>
+                </div>
+            </div>
+        </div>
+    </section>
+
+    <!-- ================================= -->
+    <!--  4. ARCHITECTURAL DETAILS         -->
+    <!-- ================================= -->
+    <section id="detalles">
+        <h2 class="section-title">Tesoros Arquitectónicos</h2>
+        <div class="details-grid">
+            <!-- Detail 1 -->
+            <div class="detail-item">
+                <div class="detail-image-container">
+                    <img src="https://live.staticflickr.com/4311/35926578031_0c52bb1667_b.jpg" alt="Altar Mayor">
+                </div>
+                <h3>El Altar Mayor</h3>
+                <p>Siglo XVIII | Neoclásico</p>
+                <button class="gemini-button" data-item-name="El Altar Mayor">✨ Describir con IA</button>
+            </div>
+            <!-- Detail 2 -->
+            <div class="detail-item">
+                <div class="detail-image-container">
+                    <img src="https://live.staticflickr.com/65535/51297530665_92e4de4b47_b.jpg" alt="Sillería del Coro">
+                </div>
+                <h3>Sillería del Coro</h3>
+                <p>Siglo XVII | Barroco</p>
+                <button class="gemini-button" data-item-name="La Sillería del Coro">✨ Describir con IA</button>
+            </div>
+            <!-- Detail 3 -->
+            <div class="detail-item">
+                <div class="detail-image-container">
+                    <img src="https://live.staticflickr.com/3931/15313936310_63364f899e_b.jpg" alt="Puerta del Perdón">
+                </div>
+                <h3>Puerta del Perdón</h3>
+                <p>Siglo XVII | Renacimiento</p>
+                <button class="gemini-button" data-item-name="La Puerta del Perdón">✨ Describir con IA</button>
+            </div>
+        </div>
+    </section>
+
+    <!-- ========================== -->
+    <!--  4.5. GEMINI LEGENDS SECTION -->
+    <!-- ========================== -->
+    <section id="leyendas">
+        <h2 class="section-title">Leyendas Ocultas</h2>
+        <p class="section-description">Cada rincón de la catedral guarda secretos y susurros del pasado. Pulsa el botón y deja que la inteligencia artificial te revele una de las muchas leyendas que habitan entre sus muros.</p>
+        <button class="gemini-button" id="generate-legend-button" style="padding: 15px 35px; font-size: 1.2rem;">✨ Generar una Leyenda</button>
+        <div id="leyenda-resultado">
+            <div class="leyenda-placeholder">El misterio está a punto de ser revelado...</div>
+        </div>
+    </section>
+
+    <!-- ======================================== -->
+    <!--  4.6. VIRTUAL GUIDE (QR CODE) SECTION    -->
+    <!-- ======================================== -->
+    <section id="guia-virtual">
+        <h2 class="section-title">Tu Guía Virtual</h2>
+        <p class="section-description">
+            Escanea el código QR con tu móvil para iniciar una audioguía inmersiva. Un historiador virtual te narrará los secretos de cada rincón de la catedral, como si estuvieras allí.
+        </p>
+        <div class="qr-code-container">
+            <!-- Replace this placeholder with your actual QR code image -->
+            <img src="https://placehold.co/250x250/ffffff/212121?text=QR" alt="Código QR para la audioguía virtual de la Catedral de Lima">
+            <p>¡Escaneame!</p>
+        </div>
+    </section>
+
+
+    <!-- ========================== -->
+    <!--  5. MAP AND LOCATION       -->
+    <!-- ========================== -->
+    <section id="ubicacion">
+        <div class="map-container">
+            <div class="map-text">
+                <h2 class="section-title">En el Corazón de Lima</h2>
+                <img src="https://i.imgur.com/kQJ2M9H.jpg" alt="Vista aérea de la Plaza Mayor">
+                <p style="margin-bottom: 30px; line-height: 1.7; font-size: 1.1rem;">La Basílica Catedral Metropolitana de Lima y Primada del Perú se ubica en el lado este de la Plaza Mayor, el epicentro histórico y cultural de la capital peruana.</p>
+                <a href="https://www.google.com/maps/dir//Catedral+de+Lima,+Jir%C3%B3n+Carabaya,+Lima+15001" target="_blank" class="cta-button">
+                    ¿CÓMO LLEGAR?
+                </a>
+            </div>
+            <div class="map-embed">
+                <!-- Embedded Google Maps code -->
+                <iframe src="https://www.google.com/maps/embed?pb=!1m18!1m12!1m3!1d3901.93099951163!2d-77.0325983258908!3d-12.045625941687612!2m3!1f0!2f0!3f0!3m2!1i1024!2i768!4f13.1!3m3!1m2!1s0x9105c8b5d357a79b%3A0x6b12a8f889a72183!2sCatedral%20de%20Lima!5e0!3m2!1ses!2spe!4v1678897042517!5m2!1ses!2spe" 
+                allowfullscreen="" loading="lazy" referrerpolicy="no-referrer-when-downgrade"></iframe>
+            </div>
+        </div>
+    </section>
+
+    <!-- ========================== -->
+    <!--  6. FOOTER                  -->
+    <!-- ========================== -->
+    <footer>
+        <!-- Replace with actual logo -->
+        <img src="https://upload.wikimedia.org/wikipedia/commons/thumb/d/d7/Logo_Ministerio_de_Cultura_PERU.svg/2560px-Logo_Ministerio_de_Cultura_PERU.svg.png" alt="Logo Ministerio de Cultura" class="footer-logo">
+        <div class="social-links">
+            <!-- Replace with actual links -->
+            <a href="#" title="Facebook">Facebook</a>
+            <a href="#" title="Instagram">Instagram</a>
+            <a href="#" title="Visita Virtual">Visita Virtual</a>
+        </div>
+        <p class="footer-credits">
+            Diseño conceptual creado con fines demostrativos. <br>
+            Créditos fotográficos a sus respectivos autores en Unsplash, Pexels y Flickr.
+        </p>
+    </footer>
+
+    <!-- SCRIPT FOR GALLERY, SCROLL ANIMATIONS AND GEMINI API -->
+    <script>
+        document.addEventListener('DOMContentLoaded', function() {
+            // --- General Modal Handling ---
+            const imageModal = document.getElementById('imageModal');
+            const geminiModal = document.getElementById('geminiModal');
+            
+            function openModal(modal) {
+                modal.style.display = 'flex';
+                modal.style.animation = "fadeIn 0.5s";
+            }
+
+            function closeModal(modal) {
+                modal.style.animation = "fadeOut 0.5s";
+                setTimeout(() => {
+                    modal.style.display = 'none';
+                }, 450);
+            }
+
+            // --- Gallery Modal Logic ---
+            const modalImg = document.getElementById('modalImage');
+            const captionText = document.getElementById('modalCaption');
+            document.querySelectorAll('.gallery-item').forEach(item => {
+                item.addEventListener('click', function() {
+                    modalImg.src = this.dataset.imgSrc;
+                    captionText.innerHTML = this.dataset.caption;
+                    openModal(imageModal);
+                });
+            });
+            document.querySelector('.close-image-modal').onclick = () => closeModal(imageModal);
+
+            // --- Gemini Modal Logic ---
+            const geminiModalTitle = document.getElementById('geminiModalTitle');
+            const geminiModalResult = document.getElementById('geminiModalResult');
+            document.querySelectorAll('.gemini-button[data-item-name]').forEach(button => {
+                button.addEventListener('click', function() {
+                    const itemName = this.dataset.itemName;
+                    geminiModalTitle.innerText = itemName;
+                    geminiModalResult.innerHTML = '<div class="loader"></div>';
+                    openModal(geminiModal);
+                    const prompt = `Actúa como un historiador de arte apasionado. Describe en un párrafo corto (máximo 100 palabras) la pieza llamada '${itemName}' que se encuentra en la Catedral de Lima, Perú. Usa un lenguaje poético y evocador que inspire al lector a querer verla.`;
+                    callGemini(prompt, geminiModalResult);
+                });
+            });
+            document.querySelector('.close-gemini-modal').onclick = () => closeModal(geminiModal);
+
+            // Close modals on outside click
+            window.onclick = function(event) {
+                if (event.target == imageModal) closeModal(imageModal);
+                if (event.target == geminiModal) closeModal(geminiModal);
+            }
+
+            // --- Gemini API Call for Legends ---
+            const legendButton = document.getElementById('generate-legend-button');
+            const legendResultContainer = document.getElementById('leyenda-resultado');
+            legendButton.addEventListener('click', () => {
+                legendResultContainer.style.display = 'block';
+                legendResultContainer.innerHTML = '<div class="loader"></div>';
+                legendButton.disabled = true;
+                const prompt = "Actúa como un cuentacuentos. Escribe una leyenda corta (150-200 palabras), misteriosa y fascinante sobre la Catedral de Lima. La historia debe ser original y cautivadora para un turista que visita la página web.";
+                callGemini(prompt, legendResultContainer, () => {
+                    legendButton.disabled = false;
+                });
+            });
+
+            // --- Reusable Gemini API Fetch Function ---
+            async function callGemini(prompt, resultElement, callback) {
+                const apiKey = ""; // If you have your own key, put it here. Otherwise, it uses the environment's proxy.
+                const apiUrl = `https://generativelanguage.googleapis.com/v1beta/models/gemini-2.0-flash:generateContent?key=${apiKey}`;
+                
+                const payload = {
+                    contents: [{
+                        parts: [{
+                            text: prompt
+                        }]
+                    }]
+                };
+
+                try {
+                    const response = await fetch(apiUrl, {
+                        method: 'POST',
+                        headers: { 'Content-Type': 'application/json' },
+                        body: JSON.stringify(payload)
+                    });
+
+                    if (!response.ok) {
+                        throw new Error(`Error de red: ${response.statusText}`);
+                    }
+
+                    const result = await response.json();
+                    
+                    if (result.candidates && result.candidates.length > 0 && result.candidates[0].content.parts.length > 0) {
+                        const text = result.candidates[0].content.parts[0].text;
+                        resultElement.innerHTML = `<p>${text.replace(/\n/g, '<br>')}</p>`; // Format response
+                    } else {
+                        throw new Error("Respuesta inválida de la API.");
+                    }
+
+                } catch (error) {
+                    console.error("Error al llamar a la API de Gemini:", error);
+                    resultElement.innerHTML = `<p style="color: #c0392b;">Lo sentimos, el historiador parece estar ocupado. Por favor, inténtalo de nuevo más tarde.</p>`;
+                } finally {
+                    if (callback) {
+                        callback(); // Re-enable button, etc.
+                    }
+                }
+            }
+            
+            // --- Scroll Reveal Animations ---
+            const sr = ScrollReveal({
+                distance: '60px',
+                duration: 2500,
+                delay: 400,
+                reset: false,
+            });
+
+            sr.reveal('.section-title', { delay: 200, origin: 'top' });
+            sr.reveal('.gallery-item', { interval: 100 });
+            sr.reveal('.timeline-container', { interval: 200 });
+            sr.reveal('.detail-item', { interval: 100, origin: 'bottom' });
+            sr.reveal('#leyendas .section-description, #leyendas .gemini-button', { origin: 'bottom', interval: 100 });
+            sr.reveal('#guia-virtual .section-title, #guia-virtual .section-description, #guia-virtual .qr-code-container', { origin: 'bottom', interval: 100 });
+            sr.reveal('.map-text', { origin: 'left' });
+            sr.reveal('.map-embed', { origin: 'right', delay: 200 });
+        });
+    </script>
+</body>
+</html>
